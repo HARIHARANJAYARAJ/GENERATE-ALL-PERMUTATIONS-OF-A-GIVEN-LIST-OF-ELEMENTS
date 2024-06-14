@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permutations Generator</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        p {
+            text-align: center;
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #444;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #74ebd5;
+            outline: none;
+        }
+        button {
+            padding: 14px 28px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .permutations {
+            margin-top: 40px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+        .permutations h2 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #444;
+        }
+        .permutations pre {
+            background-color: #f4f4f4;
+            padding: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .steps {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #666;
+        }
+        #timeComplexity {
+            margin-top: 25px;
+            padding: 12px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Permutations Generator</h1>
+        <p>Enter a set of elements and generate all their permutations.</p>
+        <form id="permForm">
+            <label for="elements">Enter elements (comma-separated):</label>
+            <input type="text" id="elements" name="elements" required>
+            <button type="button" id="recursiveButton">Generate Recursive Permutations</button>
+            <button type="button" id="iterativeButton">Generate Iterative Permutations</button>
+        </form>
+
+        <div id="recursiveSection" class="permutations">
+            <h2>Recursive Permutations</h2>
+            <pre id="recursivePerms"></pre>
+            <div id="recursiveSteps" class="steps"></div>
+            <div id="recursiveTime" class="steps"></div>
+            <div id="recursiveComplexity" class="steps"></div>
+        </div>
+<div id="iterativeSection" class="permutations">
+            <h2>Iterative Permutations</h2>
+            <pre id="iterativePerms"></pre>
+            <div id="iterativeSteps" class="steps"></div>
+            <div id="iterativeTime" class="steps"></div>
+            <div id="iterativeComplexity" class="steps"></div>
+        </div>
+    </div>
+
+    <script>
+        // Recursive Permutations Generator with step counting and time measurement
+        function generatePermutationsRecursive(arr) {
+            let result = [];
+            let steps = 0;
+            let startTime = performance.now() * 1000000; // Convert to nanoseconds
+
+            function recursiveHelper(arr, perms) {
+                if (arr.length === 0) {
+                    perms.push([]);
+                    steps++;
+                    return;
+                }
+
+                const firstElem = arr[0];
+                const rest = arr.slice(1);
+                const permsWithoutFirst = [];
+                recursiveHelper(rest, permsWithoutFirst);
+
+                permsWithoutFirst.forEach(perm => {
+                    for (let i = 0; i <= perm.length; i++) {
+                        const newPerm = [...perm.slice(0, i), firstElem, ...perm.slice(i)];
+                        perms.push(newPerm);
+                        steps++;
+                    }
+                });
+            }
+
+            recursiveHelper(arr, result);
+
+            let endTime = performance.now() * 1000000; // Convert to nanoseconds
+            let elapsedTime = endTime - startTime;
+
+            return { permutations: result, steps, time: elapsedTime };
+        }
+
+        // Iterative Permutations Generator with step counting and time measurement
+        function generatePermutationsIterative(arr) {
+            let result = [[]];
+            let steps = 1;
+            let startTime = performance.now() * 1000000; // Convert to nanoseconds
+
+            for (let i = 0; i < arr.length; i++) {
+                const currentElem = arr[i];
+                const newPerms = [];
+
+                result.forEach(perm => {
+                    for (let j = 0; j <= perm.length; j++) {
+                        const newPerm = [...perm.slice(0, j), currentElem, ...perm.slice(j)];
+                        newPerms.push(newPerm);
+                        steps++;
+                    }
+                });
+
+                result.length = 0;
+                result.push(...newPerms);
+            }
+
+            let endTime = performance.now() * 1000000; // Convert to nanoseconds
+            let elapsedTime = endTime - startTime;
+
+            return { permutations: result, steps, time: elapsedTime };
+        }
+
+      // Handle button clicks
+document.getElementById('recursiveButton').addEventListener('click', function() {
+    const input = document.getElementById('elements').value;
+    const elements = input.split(',').map(item => item.trim());
+
+    // Generate permutations using recursive approach
+    const { permutations: recursivePermutations, steps: recursiveSteps, time: recursiveTime } = generatePermutationsRecursive(elements);
+    document.getElementById('recursivePerms').textContent = JSON.stringify(recursivePermutations, null, 2);
+    document.getElementById('recursiveSteps').textContent = "Steps: " + recursiveSteps;
+    document.getElementById('recursiveTime').textContent = "Time (ns): " + recursiveTime.toFixed(2);
+    document.getElementById('recursiveComplexity').textContent = "Time Complexity: O(n * n!)";
+});
+
+document.getElementById('iterativeButton').addEventListener('click', function() {
+    const input = document.getElementById('elements').value;
+    const elements = input.split(',').map(item => item.trim());
+    // Generate permutations using iterative approach
+    const { permutations: iterativePermutations, steps: iterativeSteps, time: iterativeTime } = generatePermutationsIterative(elements);
+    document.getElementById('iterativePerms').textContent = JSON.stringify(iterativePermutations, null, 2);
+    document.getElementById('iterativeSteps').textContent = "Steps: " + iterativeSteps;
+    document.getElementById('iterativeTime').textContent = "Time (ns): " + iterativeTime.toFixed(2);
+    document.getElementById('iterativeComplexity').textContent = "Time Complexity: O(n * n!)";
+});
+
+    </script>
+</body>
+</html>
